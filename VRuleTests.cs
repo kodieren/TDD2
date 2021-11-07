@@ -33,6 +33,15 @@ namespace Tdd2Validator
             var result = rule.Validate(1);
             Assert.False(result);
         }
+
+        [Fact]
+        public void RulesCanBeStacked()
+        {
+            var rule1 = VRule<int>.For(x => x == 0);
+            var rule2 = VRule<int>.For(x => x == 0);
+
+            var combinedRule = rule1 && rule2;
+        }
     }
 
     public struct VRule<T>
