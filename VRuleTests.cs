@@ -19,13 +19,20 @@ namespace Tdd2Validator
         }
 
         [Fact]
-        public void ValidObjectCanBeVerified()
+        public void ValidCaseCanBeVerified()
+        {
+            var rule = VRule<int>.Define((x) => x == 0);
+            var result = rule.Validate(0);
+            Assert.True(result);
+        }
+        
+        [Fact]
+        public void InvalidCaseCanBeVerified()
         {
             var rule = VRule<int>.Define((x) => x == 0);
             var result = rule.Validate(1);
-            Assert.True(result);
+            Assert.False(result);
         }
-
     }
 
     public struct VRule<T>
