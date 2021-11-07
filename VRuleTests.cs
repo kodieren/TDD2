@@ -15,14 +15,14 @@ namespace Tdd2Validator
         public void ValidationRuleCanBeExecuted()
         {
             var rule = VRule<int>.For((x) => x == 0);
-            var result = rule.Validate(1);
+            var result = rule.IsSatisfiedBy(1);
         }
 
         [Fact]
         public void ValidCaseCanBeVerified()
         {
             var rule = VRule<int>.For((x) => x == 0);
-            var result = rule.Validate(0);
+            var result = rule.IsSatisfiedBy(0);
             Assert.True(result);
         }
 
@@ -30,7 +30,7 @@ namespace Tdd2Validator
         public void InvalidCaseCanBeVerified()
         {
             var rule = VRule<int>.For((x) => x == 0);
-            var result = rule.Validate(1);
+            var result = rule.IsSatisfiedBy(1);
             Assert.False(result);
         }
 
@@ -48,14 +48,14 @@ namespace Tdd2Validator
     {
         bool IsSatisfiedBy(T candidate);
         ISpecification<T> And(ISpecification<T> other);
-        ISpecification<T> AndNot(ISpecification<T> other);
-        ISpecification<T> Or(ISpecification<T> other);
-        ISpecification<T> OrNot(ISpecification<T> other);
-        ISpecification<T> Not();
+        //ISpecification<T> AndNot(ISpecification<T> other);
+        //ISpecification<T> Or(ISpecification<T> other);
+        //ISpecification<T> OrNot(ISpecification<T> other);
+        //ISpecification<T> Not();
     }
 
 
-    public struct VRule<T>
+    public struct VRule<T> : ISpecification<T>
     {
         private Func<T, bool> _rule;
 
@@ -69,11 +69,14 @@ namespace Tdd2Validator
             return new VRule<T>(rule);
         }
 
-
-
-        public bool Validate(T value)
+        public ISpecification<T> And(ISpecification<T> other)
         {
-            return _rule.Invoke(value);
+            throw new NotImplementedException();
+        }
+
+        public bool IsSatisfiedBy(T candidate)
+        {
+            return _rule.Invoke(candidate);
         }
     }
 }
