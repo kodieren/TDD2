@@ -40,9 +40,20 @@ namespace Tdd2Validator
             var rule1 = VRule<int>.For(x => x == 0);
             var rule2 = VRule<int>.For(x => x == 0);
 
-            var combinedRule = rule1 && rule2;
+            //var combinedRule = rule1 && rule2;
         }
     }
+
+    public interface ISpecification<T>
+    {
+        bool IsSatisfiedBy(T candidate);
+        ISpecification<T> And(ISpecification<T> other);
+        ISpecification<T> AndNot(ISpecification<T> other);
+        ISpecification<T> Or(ISpecification<T> other);
+        ISpecification<T> OrNot(ISpecification<T> other);
+        ISpecification<T> Not();
+    }
+
 
     public struct VRule<T>
     {
@@ -57,6 +68,8 @@ namespace Tdd2Validator
         {
             return new VRule<T>(rule);
         }
+
+
 
         public bool Validate(T value)
         {
