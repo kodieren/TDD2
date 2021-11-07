@@ -10,6 +10,13 @@ namespace Tdd2Validator
         {
             var rule = VRule<int>.Define((x) => x == 0);
         }
+
+        [Fact]
+        public void ValidationRuleCanBeExecuted()
+        {
+            var rule = VRule<int>.Define((x) => x == 0);
+            var result = rule.Validate(1);
+        }
     }
 
     public struct VRule<T>
@@ -17,6 +24,11 @@ namespace Tdd2Validator
         public static VRule<T> Define(Func<T, bool> rule)
         {
             return new VRule<T>();
+        }
+
+        internal bool Validate(T value)
+        {
+            return true;
         }
     }
 }
