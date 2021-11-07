@@ -37,14 +37,21 @@ namespace Tdd2Validator
 
     public struct VRule<T>
     {
+        private Func<T, bool> _rule;
+
+        private VRule(Func<T, bool> rule)
+        {
+            _rule = rule;
+        }
+
         public static VRule<T> Define(Func<T, bool> rule)
         {
-            return new VRule<T>();
+            return new VRule<T>(rule);
         }
 
         public bool Validate(T value)
         {
-            return true;
+            return _rule.Invoke(value);
         }
     }
 }
