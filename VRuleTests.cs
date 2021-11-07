@@ -17,6 +17,15 @@ namespace Tdd2Validator
             var rule = VRule<int>.Define((x) => x == 0);
             var result = rule.Validate(1);
         }
+
+        [Fact]
+        public void ValidObjectCanBeVerified()
+        {
+            var rule = VRule<int>.Define((x) => x == 0);
+            var result = rule.Validate(1);
+            Assert.True(result);
+        }
+
     }
 
     public struct VRule<T>
@@ -26,7 +35,7 @@ namespace Tdd2Validator
             return new VRule<T>();
         }
 
-        internal bool Validate(T value)
+        public bool Validate(T value)
         {
             return true;
         }
