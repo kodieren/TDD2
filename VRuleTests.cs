@@ -8,7 +8,7 @@ namespace Tdd2Validator
         [Fact]
         public void ValidationRuleCanBeSpecified()
         {
-            var rule = VRule<int>.For((x) => x == 0);
+            var rule = VRule<int>.For((x) => x == 0); ;
         }
 
         [Fact]
@@ -41,8 +41,8 @@ namespace Tdd2Validator
             var rule2 = VRule<int>.For(x => x == 0);
 
             var combinedRule = rule1.And(rule2);
-        }        
-        
+        }
+
         [Fact]
         public void AndRulesCanBeVerifiedPositiveCase()
         {
@@ -73,13 +73,13 @@ namespace Tdd2Validator
         bool IsSatisfiedBy(T candidate);
         ISpecification<T> And(ISpecification<T> other);
         //ISpecification<T> AndNot(ISpecification<T> other);
-        //ISpecification<T> Or(ISpecification<T> other);
+        ISpecification<T> Or(ISpecification<T> other);
         //ISpecification<T> OrNot(ISpecification<T> other);
         //ISpecification<T> Not();
     }
 
 
-    public class VRule<T> : CompositeSpecification<T>, ISpecification<T>
+    public class VRule<T> : CompositeSpecification<T>
     {
         private Func<T, bool> _rule;
 
@@ -93,11 +93,6 @@ namespace Tdd2Validator
             return new VRule<T>(rule);
         }
 
-        public ISpecification<T> And(ISpecification<T> other)
-        {
-            return new AndSpecification<T>(this, other);
-        }
-
         public override bool IsSatisfiedBy(T candidate)
         {
             return _rule.Invoke(candidate);
@@ -107,7 +102,27 @@ namespace Tdd2Validator
     public abstract class CompositeSpecification<T> : ISpecification<T>
     {
         public abstract bool IsSatisfiedBy(T candidate);
+
         public ISpecification<T> And(ISpecification<T> other) => new AndSpecification<T>(this, other);
+
+        public ISpecification<T> Or(ISpecification<T> other) => new OrSpecification<T>(this, other);
+    }
+
+    public class OrSpecification<T> : CompositeSpecification<T>
+    {
+        private CompositeSpecification<T> _left;
+        private ISpecification<T> _right;
+
+        public OrSpecification(CompositeSpecification<T> compositeSpecification, ISpecification<T> other)
+        {
+            _left = compositeSpecification;
+            _right = other;
+        }
+
+        public override bool IsSatisfiedBy(T candidate)
+        {
+            return _left.IsSatisfiedBy(candidate) || _right.IsSatisfiedBy(candidate);
+        }
     }
 
     public class AndSpecification<T> : CompositeSpecification<T>
@@ -119,11 +134,6 @@ namespace Tdd2Validator
         {
             _thisSpecification = compositeSpecification;
             _other = other;
-        }
-
-        public ISpecification<T> And(ISpecification<T> other)
-        {
-            return new AndSpecification<T>(_thisSpecification, other);
         }
 
         public override bool IsSatisfiedBy(T candidate)
