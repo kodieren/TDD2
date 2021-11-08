@@ -40,7 +40,7 @@ namespace Tdd2Validator
             var rule1 = VRule<int>.For(x => x == 0);
             var rule2 = VRule<int>.For(x => x == 0);
 
-            //var combinedRule = rule1 && rule2;
+            var combinedRule = rule1.And(rule2);
         }
     }
 
@@ -55,7 +55,7 @@ namespace Tdd2Validator
     }
 
 
-    public struct VRule<T> : ISpecification<T>
+    public class VRule<T> : CompositeSpecification<T>, ISpecification<T>
     {
         private Func<T, bool> _rule;
 
@@ -71,12 +71,40 @@ namespace Tdd2Validator
 
         public ISpecification<T> And(ISpecification<T> other)
         {
-            throw new NotImplementedException();
+            return new AndSpecification<T>(this, other);
         }
 
-        public bool IsSatisfiedBy(T candidate)
+        public override bool IsSatisfiedBy(T candidate)
         {
             return _rule.Invoke(candidate);
+        }
+    }
+
+    public abstract class CompositeSpecification<T> : ISpecification<T>
+    {
+        public abstract bool IsSatisfiedBy(T candidate);
+        public ISpecification<T> And(ISpecification<T> other) => new AndSpecification<T>(this, other);
+    }
+
+    public class AndSpecification<T> : CompositeSpecification<T>
+    {
+        private CompositeSpecification<T> _thisSpecification;
+        private ISpecification<T> _other;
+
+        public AndSpecification(CompositeSpecification<T> compositeSpecification, ISpecification<T> other)
+        {
+            _thisSpecification = compositeSpecification;
+            _other = other;
+        }
+
+        public ISpecification<T> And(ISpecification<T> other)
+        {
+            return new AndSpecification<T>(_thisSpecification, other);
+        }
+
+        public override bool IsSatisfiedBy(T candidate)
+        {
+            return _thisSpecification.IsSatisfiedBy(candidate) && _other.IsSatisfiedBy(candidate);
         }
     }
 }
