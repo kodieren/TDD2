@@ -41,6 +41,18 @@ namespace Tdd2Validator
             var rule2 = VRule<int>.For(x => x == 0);
 
             var combinedRule = rule1.And(rule2);
+        }        
+        
+        [Fact]
+        public void AndRulesCanBeVerifiedPositiveCase()
+        {
+            var rule1 = VRule<int>.For(x => x == 0);
+            var rule2 = VRule<int>.For(x => x != 1);
+
+            var combinedRule = rule1.And(rule2);
+            var result = combinedRule.IsSatisfiedBy(0);
+
+            Assert.True(result);
         }
     }
 
