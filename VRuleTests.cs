@@ -54,6 +54,18 @@ namespace Tdd2Validator
 
             Assert.True(result);
         }
+
+        [Fact]
+        public void AndRulesCanBeVerifiedNegativeCase()
+        {
+            var rule1 = VRule<int>.For(x => x == 0);
+            var rule2 = VRule<int>.For(x => x != 0);
+
+            var combinedRule = rule1.And(rule2);
+            var result = combinedRule.IsSatisfiedBy(0);
+
+            Assert.False(result);
+        }
     }
 
     public interface ISpecification<T>
