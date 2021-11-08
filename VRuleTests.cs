@@ -5,51 +5,28 @@ namespace Tdd2Validator
 {
     public class VRuleTests
     {
-        [Fact]
-        public void ValidationRuleCanBeSpecified()
-        {
-            var rule = VRule<int>.For((x) => x == 0); ;
-        }
+        private VRule<int> _isZero = VRule<int>.For((x) => x == 0);
+        private VRule<int> _isOne = VRule<int>.For((x) => x == 1);
 
-        [Fact]
-        public void ValidationRuleCanBeExecuted()
-        {
-            var rule = VRule<int>.For((x) => x == 0);
-            var result = rule.IsSatisfiedBy(1);
-        }
 
         [Fact]
         public void ValidCaseCanBeVerified()
         {
-            var rule = VRule<int>.For((x) => x == 0);
-            var result = rule.IsSatisfiedBy(0);
+            var result = _isOne.IsSatisfiedBy(1);
             Assert.True(result);
         }
 
         [Fact]
         public void InvalidCaseCanBeVerified()
         {
-            var rule = VRule<int>.For((x) => x == 0);
-            var result = rule.IsSatisfiedBy(1);
+            var result = _isZero.IsSatisfiedBy(1);
             Assert.False(result);
-        }
-
-        [Fact]
-        public void RulesCanBeStacked()
-        {
-            var rule1 = VRule<int>.For(x => x == 0);
-            var rule2 = VRule<int>.For(x => x == 0);
-
-            var combinedRule = rule1.And(rule2);
         }
 
         [Fact]
         public void AndRulesCanBeVerifiedPositiveCase()
         {
-            var rule1 = VRule<int>.For(x => x == 0);
-            var rule2 = VRule<int>.For(x => x != 1);
-
-            var combinedRule = rule1.And(rule2);
+            var combinedRule = _isZero.And(_isZero);
             var result = combinedRule.IsSatisfiedBy(0);
 
             Assert.True(result);
@@ -58,10 +35,7 @@ namespace Tdd2Validator
         [Fact]
         public void AndRulesCanBeVerifiedNegativeCase()
         {
-            var rule1 = VRule<int>.For(x => x == 0);
-            var rule2 = VRule<int>.For(x => x != 0);
-
-            var combinedRule = rule1.And(rule2);
+            var combinedRule = _isZero.And(_isOne);
             var result = combinedRule.IsSatisfiedBy(0);
 
             Assert.False(result);
