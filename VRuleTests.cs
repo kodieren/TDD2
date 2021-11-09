@@ -24,10 +24,23 @@ namespace Tdd2Validator
             {
                 new object[] { _isOne, 1, true },
                 new object[] { _isOne, 0, false },
+
                 new object[] { _isOne.And(_isZero), 0, false },
                 new object[] { _isOne.And(_isZero), 1, false },
                 new object[] { _isZero.And(_isZero), 1, false },
                 new object[] { _isOne.And(_isOne), 1, true },
+
+                new object[] { _isOne.Or(_isZero), 0, true },
+                new object[] { _isOne.Or(_isZero), 1, true  },
+                new object[] { _isZero.Or(_isZero), 1, false },
+                new object[] { _isOne.Or(_isOne), 1, true },
+
+
+                new object[] { _isOne.And(_isZero).Or(_isOne), 1, true },
+                new object[] { _isOne.And(_isZero).Or(_isOne), 0, false },
+
+                new object[] { _isOne.And(_isZero.Or(_isOne)), 0, false },
+                new object[] { _isOne.Or(_isZero.And(_isOne)), 1, true }
             };
         }
     }
@@ -74,13 +87,13 @@ namespace Tdd2Validator
 
     public class OrSpecification<T> : CompositeSpecification<T>
     {
-        private CompositeSpecification<T> _left;
+        private ISpecification<T> _left;
         private ISpecification<T> _right;
 
-        public OrSpecification(CompositeSpecification<T> compositeSpecification, ISpecification<T> other)
+        public OrSpecification(ISpecification<T> left, ISpecification<T> right)
         {
-            _left = compositeSpecification;
-            _right = other;
+            _left = left;
+            _right = right;
         }
 
         public override bool IsSatisfiedBy(T candidate)
@@ -91,18 +104,18 @@ namespace Tdd2Validator
 
     public class AndSpecification<T> : CompositeSpecification<T>
     {
-        private CompositeSpecification<T> _thisSpecification;
-        private ISpecification<T> _other;
+        private ISpecification<T> _left;
+        private ISpecification<T> _right;
 
-        public AndSpecification(CompositeSpecification<T> compositeSpecification, ISpecification<T> other)
+        public AndSpecification(ISpecification<T> left, ISpecification<T> right)
         {
-            _thisSpecification = compositeSpecification;
-            _other = other;
+            _left = left;
+            _right = right;
         }
 
         public override bool IsSatisfiedBy(T candidate)
         {
-            return _thisSpecification.IsSatisfiedBy(candidate) && _other.IsSatisfiedBy(candidate);
+            return _left.IsSatisfiedBy(candidate) && _right.IsSatisfiedBy(candidate);
         }
     }
 }
