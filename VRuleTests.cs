@@ -1,44 +1,34 @@
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Tdd2Validator
 {
     public class VRuleTests
     {
-        private VRule<int> _isZero = VRule<int>.For((x) => x == 0);
-        private VRule<int> _isOne = VRule<int>.For((x) => x == 1);
+        private static VRule<int> _isZero => VRule<int>.For((x) => x == 0);
+        private static VRule<int> _isOne => VRule<int>.For((x) => x == 1);
 
 
-        [Fact]
-        public void ValidCaseCanBeVerified()
+        [Theory, MemberData(nameof(TestCases))]
+        public void ExecuteTestCases(CompositeSpecification<int> rule, int candidate, bool expectedResult)
         {
-            var result = _isOne.IsSatisfiedBy(1);
-            Assert.True(result);
+            var actualResult = rule.IsSatisfiedBy(candidate);
+
+            Assert.Equal(expectedResult, actualResult);
         }
 
-        [Fact]
-        public void InvalidCaseCanBeVerified()
+        public static IEnumerable<object[]> TestCases()
         {
-            var result = _isZero.IsSatisfiedBy(1);
-            Assert.False(result);
-        }
-
-        [Fact]
-        public void AndRulesCanBeVerifiedPositiveCase()
-        {
-            var combinedRule = _isZero.And(_isZero);
-            var result = combinedRule.IsSatisfiedBy(0);
-
-            Assert.True(result);
-        }
-
-        [Fact]
-        public void AndRulesCanBeVerifiedNegativeCase()
-        {
-            var combinedRule = _isZero.And(_isOne);
-            var result = combinedRule.IsSatisfiedBy(0);
-
-            Assert.False(result);
+            return new List<object[]>
+            {
+                new object[] { _isOne, 1, true },
+                new object[] { _isOne, 0, false },
+                new object[] { _isOne.And(_isZero), 0, false },
+                new object[] { _isOne.And(_isZero), 1, false },
+                new object[] { _isZero.And(_isZero), 1, false },
+                new object[] { _isOne.And(_isOne), 1, true },
+            };
         }
     }
 
